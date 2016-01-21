@@ -22,14 +22,14 @@ FROM DUAL;
 --  START C:\Users\Deric\workspace\COMP2714_LAB01\Lab01_MccaddenD.sql
 -- ---------------------------------------------------------
 --
---Q1-----------------------------
+--Q1--------------------------------------------------------
 --
 DROP TABLE Booking;
 DROP TABLE Guest;
 DROP TABLE Room;
 DROP TABLE Hotel;
 --
---Q2----------------------------
+--Q2--------------------------------------------------------
 --
 CREATE TABLE Hotel
 (hotelNo           CHAR(8)       NOT NULL
@@ -41,21 +41,21 @@ CREATE TABLE Hotel
 CREATE TABLE Room
 (roomNo            CHAR(8)       NOT NULL
 ,hotelNo           CHAR(8)       NOT NULL
-,type              VARCHAR2(20)  NOT NULL
+,type              DOUBLE(20)    NOT NULL
 ,price             VARCHAR2(30)  NOT NULL
 ,CONSTRAINT PKRoom    PRIMARY KEY (roomNo)
 ,CONSTRAINT FKHotelNo FOREIGN KEY (hotelNo) REFERENCES Hotel (hotelNo)
 );
 --
+--Q3--------------------------------------------------------
 --
---
-CREATE TABLE Room
+CREATE TABLE Guest
 (guestNo           CHAR(8)       NOT NULL
 ,guestName         VARCHAR2(20)  NOT NULL
 ,guestAddress      VARCHAR2(20)  NOT NULL
 ,CONSTRAINT PKGuest    PRIMARY KEY (guestNo)
 );
-
+--
 CREATE TABLE Booking
 (hotelNo           CHAR(8)       NOT NULL
 ,guestNo           CHAR(8)       NOT NULL
@@ -64,9 +64,26 @@ CREATE TABLE Booking
 ,dateTo            DATE          NOT NULL
 ,CONSTRAINT PKDateFrom PRIMARY KEY (dateFrom)
 ,CONSTRAINT FKHotelNo  FOREIGN KEY (hotelNo) REFERENCES Hotel (hotelNo)
-,CONSTRAINT FKGuestNo  FOREIGN KEY (guestNo) REFERENCES Hotel (guestNo)
+,CONSTRAINT FKGuestNo  FOREIGN KEY (guestNo) REFERENCES Room (guestNo)
 ,CONSTRAINT FKRoomNo   FOREIGN KEY (roomNo)  REFERENCES Hotel (roomNo)
 );
+--
+--Q4--------------------------------------------------------
+--
+
+--
+--Q5--------------------------------------------------------
+--
+
+--
+--Q6--------------------------------------------------------
+--
+
+--
+--Q7--------------------------------------------------------
+--
+
+
 
 
 
