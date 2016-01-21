@@ -1,0 +1,184 @@
+SQL> --
+SQL> -- ---------------------------------------------------------
+SQL> --
+SQL> --  COMP 2714
+SQL> --  SET 2D
+SQL> --  Assignment Asn01
+SQL> --  Mccadden, Deric    A00751277
+SQL> --  email: dmccadden@my.bcit.ca
+SQL> --
+SQL> -- ---------------------------------------------------------
+SQL> --  START C:\Users\Deric\workspace\COMP2714_ASS01\Ass01_MccaddenD.sql
+SQL> -- ---------------------------------------------------------
+SQL> --
+SQL> ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD';
+
+Session altered.
+
+SQL> --
+SQL> SELECT SYSDATE
+  2  FROM DUAL;
+
+SYSDATE                                                                                             
+----------                                                                                          
+2016-01-21                                                                                          
+
+SQL> --
+SQL> --Q1--------------------------------------------------------
+SQL> --
+SQL> DROP TABLE Booking;
+
+Table dropped.
+
+SQL> DROP TABLE Guest;
+
+Table dropped.
+
+SQL> DROP TABLE Room;
+
+Table dropped.
+
+SQL> DROP TABLE Hotel;
+
+Table dropped.
+
+SQL> DROP TABLE OldBoooking;
+DROP TABLE OldBoooking
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist 
+
+
+SQL> --
+SQL> --Q2--------------------------------------------------------
+SQL> --
+SQL> CREATE TABLE Hotel
+  2  (hotelNo		CHAR(8)       NOT NULL
+  3  ,hotelName 	VARCHAR2(20)  NOT NULL
+  4  ,city		VARCHAR2(30)  NOT NULL
+  5  ,CONSTRAINT PKHotel     PRIMARY KEY (hotelNo)
+  6  ,CONSTRAINT PKHotelNo  CHECK (hotelNo >= 1 OR hotelNo <= 100)
+  7  );
+
+Table created.
+
+SQL> --
+SQL> CREATE TABLE Room
+  2  (roomNo		CHAR(8)       NOT NULL
+  3  ,hotelNo		CHAR(8)       NOT NULL
+  4  ,type		VARCHAR(20)   NOT NULL
+  5  ,price		DECIMAL(12,2) NOT NULL
+  6  ,CONSTRAINT PKRoom     PRIMARY KEY (roomNo)
+  7  ,CONSTRAINT FKHotelNo1 FOREIGN KEY (hotelNo)  REFERENCES Hotel (hotelNo)
+  8  ,CONSTRAINT CHKType     CHECK (type = 'Single' OR type = 'Double' OR type = 'Family')
+  9  ,CONSTRAINT CHKPrice    CHECK (price >= 10 OR price <= 100)
+ 10  ,CONSTRAINT CHKRoomNo1  CHECK (roomNo >= 1 OR roomNo <= 100)
+ 11  );
+
+Table created.
+
+SQL> --
+SQL> --Q3--------------------------------------------------------
+SQL> --
+SQL> CREATE TABLE Guest
+  2  (guestNo		CHAR(8)       NOT NULL
+  3  ,guestName 	VARCHAR2(50)  NOT NULL
+  4  ,guestAddress	VARCHAR2(70)  NOT NULL
+  5  ,CONSTRAINT PKGuest    PRIMARY KEY (guestNo)
+  6  );
+
+Table created.
+
+SQL> --
+SQL> CREATE TABLE Booking
+  2  (hotelNo		CHAR(8)       NOT NULL
+  3  ,guestNo		CHAR(8)       NOT NULL
+  4  ,roomNo		CHAR(8)       NOT NULL
+  5  ,dateFrom		DATE	      NOT NULL
+  6  ,dateTo		DATE	      NOT NULL
+  7  ,CONSTRAINT PKDateFrom PRIMARY KEY (dateFrom)
+  8  ,CONSTRAINT FKHotelNo2 FOREIGN KEY (hotelNo) REFERENCES Hotel (hotelNo)
+  9  ,CONSTRAINT FKGuestNo  FOREIGN KEY (guestNo) REFERENCES Guest (guestNo)
+ 10  ,CONSTRAINT FKRoomNo2  FOREIGN KEY (roomNo)  REFERENCES Room (roomNo)
+ 11  );
+
+Table created.
+
+SQL> --
+SQL> --Q4--------------------------------------------------------
+SQL> --
+SQL> INSERT INTO Hotel	   VALUES   (1, 'Casino','Vancouver');
+
+1 row created.
+
+SQL> INSERT INTO Hotel	   VALUES   (2, 'Dive','Hope');
+
+1 row created.
+
+SQL> INSERT INTO Hotel	   VALUES   (3, 'Motel','Kelowna');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price) VALUES (31, 1, 'Family', 100);
+
+1 row created.
+
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price) VALUES (42, 2, 'Single', 30);
+
+1 row created.
+
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price) VALUES (63, 3, 'Double', 60);
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress) VALUES (6500, 'Jimmy','336 Hill St.');
+
+1 row created.
+
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress) VALUES (6501, 'Fred','213 Lake Ave.');
+
+1 row created.
+
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress) VALUES (6502, 'Bill','336 Forest Road');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo) VALUES (1, 6500, 31, '2015-12-29', '2016-01-03');
+
+1 row created.
+
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo) VALUES (1, 6500, 31, '2016-01-05', '2016-01-08');
+
+1 row created.
+
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo) VALUES (1, 6500, 31, '2016-01-10', '2016-01-11');
+
+1 row created.
+
+SQL> --
+SQL> --Q5--------------------------------------------------------
+SQL> --
+SQL> ALTER TABLE Room DROP CONSTRAINT CHKType;
+
+Table altered.
+
+SQL> ALTER TABLE Room ADD  CONSTRAINT CHKType	 CHECK (type = 'Single' OR type = 'Double' OR type = 'Family');
+
+Table altered.
+
+SQL> --
+SQL> --Q6--------------------------------------------------------
+SQL> --
+SQL> 
+SQL> --
+SQL> --Q7--------------------------------------------------------
+SQL> --
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> SPOOL OFF
