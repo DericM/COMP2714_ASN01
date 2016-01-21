@@ -12,15 +12,13 @@ SPOOL C:\Users\Deric\workspace\COMP2714_LAB01\Lab01_MccaddenD.txt
 --  email: dmccadden@my.bcit.ca
 --
 -- ---------------------------------------------------------
+--  START C:\Users\Deric\workspace\COMP2714_LAB01\Lab01_MccaddenD.sql
+-- ---------------------------------------------------------
 --
 ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD';
 --
 SELECT SYSDATE
 FROM DUAL;
---
--- ---------------------------------------------------------
---  START C:\Users\Deric\workspace\COMP2714_LAB01\Lab01_MccaddenD.sql
--- ---------------------------------------------------------
 --
 --Q1--------------------------------------------------------
 --
@@ -28,6 +26,7 @@ DROP TABLE Booking;
 DROP TABLE Guest;
 DROP TABLE Room;
 DROP TABLE Hotel;
+DROP TABLE OldBoooking;
 --
 --Q2--------------------------------------------------------
 --
@@ -35,24 +34,28 @@ CREATE TABLE Hotel
 (hotelNo           CHAR(8)       NOT NULL
 ,hotelName         VARCHAR2(20)  NOT NULL
 ,city              VARCHAR2(30)  NOT NULL
-,CONSTRAINT PKHotel PRIMARY KEY (hotelNo)
+,CONSTRAINT PKHotel     PRIMARY KEY (hotelNo)
+,CONSTRAINT CHKHotelNo  CHECK (hotelNo >= 1 OR hotelNo <= 100)
 );
 --
 CREATE TABLE Room
-(roomNo            CHAR(8)       NOT NULL
+(roomNo            CHAR(8)       NOT NULL    
 ,hotelNo           CHAR(8)       NOT NULL
-,type              DOUBLE(20)    NOT NULL
-,price             VARCHAR2(30)  NOT NULL
-,CONSTRAINT PKRoom    PRIMARY KEY (roomNo)
-,CONSTRAINT FKHotelNo FOREIGN KEY (hotelNo) REFERENCES Hotel (hotelNo)
+,type              VARCHAR(20)   NOT NULL    
+,price             DECIMAL(12,2) NOT NULL   
+,CONSTRAINT PKRoom     PRIMARY KEY (roomNo)
+,CONSTRAINT FKHotelNo  FOREIGN KEY (hotelNo)  REFERENCES Hotel (hotelNo)
+,CONSTRAINT CHKType    CHECK (type = 'Single' OR type = 'Double' OR type = 'Family')
+,CONSTRAINT CHKPrice   CHECK (price >= 10 OR price <= 100)
+,CONSTRAINT CHKRoomNo  CHECK (roomNo >= 1 OR roomNo <= 100)
 );
 --
 --Q3--------------------------------------------------------
 --
 CREATE TABLE Guest
 (guestNo           CHAR(8)       NOT NULL
-,guestName         VARCHAR2(20)  NOT NULL
-,guestAddress      VARCHAR2(20)  NOT NULL
+,guestName         VARCHAR2(50)  NOT NULL
+,guestAddress      VARCHAR2(70)  NOT NULL
 ,CONSTRAINT PKGuest    PRIMARY KEY (guestNo)
 );
 --
@@ -70,11 +73,35 @@ CREATE TABLE Booking
 --
 --Q4--------------------------------------------------------
 --
+INSERT INTO Hotel (hotelName, city)     VALUES
+('Casino','Vancouver')
+,('Dive','Hope')
+,('Motel','Kelowna');
 
+INSERT INTO Room (hotelNo, type, price) VALUES 
+ ((SELECT hotelNo from Hotel WHERE hotelName='Casino'), 'Family', 100)
+,((SELECT hotelNo from Hotel WHERE hotelName='Dive'), 'Single', 30)
+,((SELECT hotelNo from Hotel WHERE hotelName='Motel'), 'Double', 60);
+
+INSERT INTO Guest (guestName, guestAddress) VALUES
+('Jimmy','336 Hill St.')
+,('Fred','213 Lake Ave.')
+,('Bill','336 Forest Road');
+ 
+INSERT INTO Booking (hotelNo, guestNo, roomNo) VALUES
+ ((SELECT hotelNo from Hotel WHERE hotelName='Casino')
+ ,(SELECT guestNo from Guest WHERE guestName='Jimmy')
+ ,(SELECT roomNo from Room WHERE hotelNo='Jimmy'))
+
+,((SELECT hotelNo from Hotel WHERE hotelName='Casino')
+ ,(SELECT guestNo from Guest WHERE guestName='Jimmy')
+ ,(SELECT guestNo from Guest WHERE guestName='Jimmy'))
+ 
 --
 --Q5--------------------------------------------------------
 --
-
+ALTER TABLE Room DROP CONSTRAINT CHKType;
+ALTER TABLE Room ADD  CONSTRAINT CHKType    CHECK (type = 'Single' OR type = 'Double' OR type = 'Family')
 --
 --Q6--------------------------------------------------------
 --
