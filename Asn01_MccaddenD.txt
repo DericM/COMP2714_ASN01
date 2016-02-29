@@ -1,0 +1,272 @@
+SQL> --
+SQL> -- ---------------------------------------------------------
+SQL> --
+SQL> --  COMP 2714
+SQL> --  SET 2D
+SQL> --  Assignment Asn01
+SQL> --  Mccadden, Deric    A00751277
+SQL> --  email: dmccadden@my.bcit.ca
+SQL> --
+SQL> -- ---------------------------------------------------------
+SQL> --  START C:\Users\Deric\workspace\COMP2714_ASN01\Ass01_MccaddenD.sql
+SQL> -- ---------------------------------------------------------
+SQL> --
+SQL> ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD';
+
+Session altered.
+
+SQL> SELECT SYSDATE
+  2  FROM DUAL;
+
+SYSDATE                                                                         
+----------                                                                      
+2016-02-20                                                                      
+
+SQL> --
+SQL> --Q1--------------------------------------------------------
+SQL> --
+SQL> DROP TABLE OldBooking;
+
+Table dropped.
+
+SQL> DROP TABLE Booking;
+
+Table dropped.
+
+SQL> DROP TABLE Guest;
+
+Table dropped.
+
+SQL> DROP TABLE Room;
+
+Table dropped.
+
+SQL> DROP TABLE Hotel;
+
+Table dropped.
+
+SQL> --
+SQL> --Q2--------------------------------------------------------
+SQL> --
+SQL> CREATE TABLE Hotel
+  2    (hotelNo   CHAR(8)	NOT NULL
+  3    ,hotelName VARCHAR2(20)	NOT NULL
+  4    ,city	  VARCHAR2(30)	NOT NULL
+  5    ,CONSTRAINT pk_hotel PRIMARY KEY (hotelNo)
+  6    ,CONSTRAINT ck_hotelNo CHECK (hotelNo >= 1 OR hotelNo <= 100)
+  7    )
+  8  ;
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE Room
+  2    (roomNo	  CHAR(8)	NOT NULL
+  3    ,hotelNo   CHAR(8)	NOT NULL
+  4    ,type	  VARCHAR(20)	NOT NULL
+  5    ,price	  DECIMAL(12,2) NOT NULL
+  6    ,CONSTRAINT pk_room	  PRIMARY KEY (roomNo, hotelNo)
+  7    ,CONSTRAINT fk_room_hotel  FOREIGN KEY (hotelNo)  REFERENCES Hotel (hotelNo)
+  8    ,CONSTRAINT ck_room_type   CHECK (type IN ('Single', 'Double', 'Family'))
+  9    ,CONSTRAINT ck_room_price  CHECK (price BETWEEN 10 AND 100)
+ 10    ,CONSTRAINT ck_room_roomNo CHECK (roomNo BETWEEN 1 AND 100)
+ 11    )
+ 12  ;
+
+Table created.
+
+SQL> --
+SQL> --Q3--------------------------------------------------------
+SQL> --
+SQL> CREATE TABLE Guest
+  2    (guestNo      CHAR(8)	  NOT NULL
+  3    ,guestName    VARCHAR2(50) NOT NULL
+  4    ,guestAddress VARCHAR2(70) NOT NULL
+  5    ,CONSTRAINT pk_guest	    PRIMARY KEY (guestNo)
+  6    )
+  7  ;
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE Booking
+  2    (hotelNo  CHAR(8) NOT NULL
+  3    ,guestNo  CHAR(8) NOT NULL
+  4    ,roomNo	 CHAR(8) NOT NULL
+  5    ,dateFrom DATE	 NOT NULL
+  6    ,dateTo	 DATE	 NULL
+  7    ,CONSTRAINT pk_booking	    PRIMARY KEY (hotelNo, guestNo, DateFrom)
+  8    ,CONSTRAINT fk_booking_room  FOREIGN KEY (roomNo, hotelNo) REFERENCES Room (roomNo, hotelNo)
+  9    ,CONSTRAINT fk_booking_guest FOREIGN KEY (guestNo)	  REFERENCES Guest (guestNo)
+ 10    ,CONSTRAINT ck_booking_hotelNo CHECK (hotelNo >= 1 OR hotelNo <= 100)
+ 11    ,CONSTRAINT ck_booking_guestNo CHECK (guestNo >= 1 OR guestNo <= 10000)
+ 12    ,CONSTRAINT ck_booking_roomNo  CHECK (roomNo >= 1 OR roomNo <= 100)
+ 13    )
+ 14  ;
+
+Table created.
+
+SQL> --
+SQL> --Q4--------------------------------------------------------
+SQL> --
+SQL> INSERT INTO Hotel
+  2    VALUES ('1', 'Casino','Vancouver')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Hotel
+  2    VALUES ('2', 'Dive','Hope')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Hotel
+  2    VALUES ('3', 'Motel','Kelowna')
+  3  ;
+
+1 row created.
+
+SQL> --
+SQL> --
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price)
+  2    VALUES ('31', '1', 'Family', 100)
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price)
+  2    VALUES ('42', '2', 'Single', 30)
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Room (roomNo, hotelNo, type, price)
+  2    VALUES ('63', '3', 'Double', 60)
+  3  ;
+
+1 row created.
+
+SQL> --
+SQL> --
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress)
+  2    VALUES ('6500', 'Jimmy','336 Hill St.')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress)
+  2    VALUES ('6501', 'Fred','213 Lake Ave.')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Guest (guestNo, guestName, guestAddress)
+  2    VALUES ('6502', 'Bill','336 Forest Road')
+  3  ;
+
+1 row created.
+
+SQL> --
+SQL> --
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo)
+  2    VALUES ('1', '6500', '31', DATE'2015-12-20', DATE'2015-12-25')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo)
+  2    VALUES ('1', '6501', '31', DATE'2016-01-05', DATE'2016-01-08')
+  3  ;
+
+1 row created.
+
+SQL> INSERT INTO Booking (hotelNo, guestNo, roomNo, dateFrom, dateTo)
+  2    VALUES ('1', '6502', '31', DATE'2016-01-10', DATE'2016-01-11')
+  3  ;
+
+1 row created.
+
+SQL> --
+SQL> --Q5--------------------------------------------------------
+SQL> --
+SQL> ALTER TABLE Room
+  2    DROP CONSTRAINT ck_room_type
+  3  ;
+
+Table altered.
+
+SQL> ALTER TABLE Room
+  2    ADD CONSTRAINT ck_room_type CHECK (type IN ('Single', 'Double', 'Family', 'Deluxe'))
+  3  ;
+
+Table altered.
+
+SQL> ALTER TABLE Room
+  2    ADD discount DECIMAL(3) DEFAULT 0 NOT NULL
+  3  	 CONSTRAINT ck_room_discount CHECK (discount BETWEEN 0 AND 30)
+  4  ;
+
+Table altered.
+
+SQL> --
+SQL> --Q6--------------------------------------------------------
+SQL> --
+SQL> UPDATE Room
+  2    SET price = price * 1.15
+  3    WHERE type = 'Double'
+  4    AND hotelNo = (SELECT hotelNo
+  5  		      FROM Hotel
+  6  		      WHERE hotelName = 'Motel')
+  7  ;
+
+1 row updated.
+
+SQL> UPDATE Booking
+  2    SET dateFrom = DATE'2016-01-9',
+  3  	   dateTo = DATE'2016-01-12'
+  4    WHERE guestNo = (SELECT guestNo
+  5  			FROM Guest
+  6  			WHERE guestName = 'Fred')
+  7    AND hotelNo =   (SELECT hotelNo
+  8  			FROM Hotel
+  9  			WHERE hotelName = 'Casino')
+ 10    AND dateFrom =	DATE'2016-01-05'
+ 11  ;
+
+1 row updated.
+
+SQL> --
+SQL> --Q7--------------------------------------------------------
+SQL> --
+SQL> CREATE TABLE OldBooking
+  2    (hotelNo  CHAR(8) NOT NULL
+  3    ,guestNo  CHAR(8) NOT NULL
+  4    ,roomNo	 CHAR(8) NOT NULL
+  5    ,dateFrom DATE	 NOT NULL
+  6    ,dateTo	 DATE	 NULL
+  7    ,CONSTRAINT pk_oldBooking PRIMARY KEY (hotelNo, roomNo)
+  8    )
+  9  ;
+
+Table created.
+
+SQL> 
+SQL> INSERT INTO OldBooking
+  2    (SELECT *
+  3    FROM Booking
+  4    WHERE dateTo < DATE'2016-01-01')
+  5  ;
+
+1 row created.
+
+SQL> DELETE FROM Booking
+  2    WHERE dateTo < DATE'2016-01-01'
+  3  ;
+
+1 row deleted.
+
+SQL> --
+SQL> --END--------------------------------------------------------
+SQL> --
+SQL> SPOOL OFF
